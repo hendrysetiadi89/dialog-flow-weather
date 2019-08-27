@@ -8,13 +8,26 @@ app.intent("Ask weather", async (conv, params) => {
   let weather = await axios.get(
     `http://api.openweathermap.org/data/2.5/weather?q=${
       params["city"]
-    }&APPID=0ecdb4b8fe7ce82083227bb58dbb334a`
+    }&APPID=0ecdb4b8fe7ce82083227bb58dbb334a&lang=id`
   );
 
-  return conv.add(
-    `The Weather of ${params["city"]} today is ${
-      weather.data.weather[0].description
-    }`
+  var weatherDesc = "" + weather.data.weather[0].description
+  if (weatherDesc.includes("hujan")) {
+    var newParams = params
+    newParams["weatherDesc"] = weatherDesc
+    conv.followup("weather_rain", newParams)
+  } else {
+    return conv.ask(
+      `Cuaca ${params["city"]} hari ini adalah ${
+        weatherDesc
+      }`
+    );
+  }
+});
+
+app.intent("Ask weather - rain - umbrela - yes", (conv, params) => {
+  return conv.ask(
+    `Saya akan memesan payung. Silakan tunggu.`
   );
 });
 
